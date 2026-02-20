@@ -1,7 +1,7 @@
 package com.project.back_end.controllers;
 
 import com.project.back_end.models.Prescription; 
-import com.project.back_end.services.AppointmentService;
+import com.project.back_end.services.AppointmentController;
 import com.project.back_end.services.PrescriptionService;
 import com.project.back_end.services.Service;
 import org.springframework.http.HttpStatus;
@@ -16,11 +16,11 @@ public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;
     private final Service service;
-    private final AppointmentService appointmentService;
+    private final AppointmentController appointmentService;
 
     public PrescriptionController(PrescriptionService prescriptionService,
                                   Service service,
-                                  AppointmentService appointmentService) {
+                                  AppointmentController appointmentService) {
         this.prescriptionService = prescriptionService;
         this.service = service;
         this.appointmentService = appointmentService;
