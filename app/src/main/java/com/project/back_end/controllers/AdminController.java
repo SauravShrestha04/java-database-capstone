@@ -1,6 +1,8 @@
 
 package com.project.back_end.controllers;
 
+import com.project.back_end.models.Admin; 
+
 public class AdminController {
 
 // 1. Set Up the Controller Class:

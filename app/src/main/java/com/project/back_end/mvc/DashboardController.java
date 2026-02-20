@@ -1,6 +1,7 @@
 package com.project.back_end.mvc;
 
 import com.project.back_end.service.CommonService;
+import com.project.back_end.models.Admin; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,7 @@
 package com.project.back_end.services;
 
 import com.project.back_end.DTO.AppointmentDTO;
+import com.project.back_end.models.Admin; 
 import com.project.back_end.model.Appointment;
 import com.project.back_end.model.Doctor;
 import com.project.back_end.model.Patient;

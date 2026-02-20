@@ -1,6 +1,7 @@
 package com.project.back_end.services;
 
 import com.project.back_end.model.Prescription;
+import com.project.back_end.models.Admin; 
 import com.project.back_end.repo.PrescriptionRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
