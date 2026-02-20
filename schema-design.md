@@ -1,182 +1,147 @@
 # Schema Design – Smart Clinic Management System
 
-This document describes the database design for the Smart Clinic Management System.
+This file documents the database structure for the Smart Clinic Management System.  
+The system uses two databases:
 
-The system uses a **hybrid storage approach**:
-
-- **MySQL** for structured, relational data (users, doctors, patients, appointments, admin).
-- **MongoDB** for flexible, document-style data (prescriptions).
-
-This design keeps core transactional data strongly structured, while allowing more flexibility for medical details that can change over time.
+- **MySQL** → Stores structured and relational operational data  
+- **MongoDB** → Stores flexible, evolving medical documents  
 
 ---
 
-## 1. MySQL Relational Database Design
+## MySQL Database Design
 
-### 1.1 Overview
+MySQL is used for core data that requires structure, validation, and relationships.  
+A clinic must store information about patients, doctors, appointments, and admins.  
+These tables form the backbone of the system.
 
-The relational database will store:
-
-- Patient profiles  
-- Doctor profiles  
-- Admin users  
-- Appointments linking patients and doctors  
-
-Main relationships:
-
-- One **patient** can have many **appointments**.  
-- One **doctor** can have many **appointments**.  
-- Each **appointment** links one patient and one doctor.
+Below are the required tables.
 
 ---
 
-### 1.2 Tables
+### Table: patients
+Stores registered patients and their basic information.
 
-#### 1.2.1 `admins`
+- **id:** INT, Primary Key, AUTO_INCREMENT  
+- **full_name:** VARCHAR(100), NOT NULL  
+- **email:** VARCHAR(100), NOT NULL, UNIQUE  
+- **date_of_birth:** DATE, NULL  
+- **phone_number:** VARCHAR(20), NULL  
+- **gender:** VARCHAR(20), NULL  
+- **created_at:** DATETIME, DEFAULT CURRENT_TIMESTAMP  
 
-| Column        | Data Type        | Constraints                           | Description                     |
-|--------------|------------------|---------------------------------------|---------------------------------|
-| id           | INT              | PRIMARY KEY, AUTO_INCREMENT           | Admin unique ID                 |
-| email        | VARCHAR(100)     | NOT NULL, UNIQUE                      | Admin login email               |
-| password_hash| VARCHAR(255)     | NOT NULL                              | Encrypted password              |
-| full_name    | VARCHAR(100)     | NOT NULL                              | Admin full name                 |
-| created_at   | DATETIME         | NOT NULL, DEFAULT CURRENT_TIMESTAMP   | When account was created        |
-| is_active    | TINYINT(1)       | NOT NULL, DEFAULT 1                   | Soft-active flag                |
-
-> **Why?**  
-> Admins are few and managed centrally, so a simple table with unique email and active flag is enough.
-
----
-
-#### 1.2.2 `doctors`
-
-| Column         | Data Type        | Constraints                           | Description                       |
-|---------------|------------------|---------------------------------------|-----------------------------------|
-| id            | INT              | PRIMARY KEY, AUTO_INCREMENT           | Doctor unique ID                  |
-| full_name     | VARCHAR(100)     | NOT NULL                              | Doctor full name                  |
-| email         | VARCHAR(100)     | NOT NULL, UNIQUE                      | Doctor contact / login email      |
-| specialization| VARCHAR(100)     | NOT NULL                              | e.g., "Cardiology", "Dermatology" |
-| phone_number  | VARCHAR(20)      | NULL                                  | Optional phone                    |
-| created_at    | DATETIME         | NOT NULL, DEFAULT CURRENT_TIMESTAMP   | When doctor was added             |
-| is_active     | TINYINT(1)       | NOT NULL, DEFAULT 1                   | Whether doctor is active          |
-
-> **Why?**  
-> Doctors need unique emails for login, and specialization is important for search and display.
+**Notes:**  
+- Email must be unique for login.  
+- Optional fields make registration simple.  
 
 ---
 
-#### 1.2.3 `patients`
+### Table: doctors
+Stores doctor information used for appointments and specialization filtering.
 
-| Column        | Data Type        | Constraints                           | Description                          |
-|--------------|------------------|---------------------------------------|--------------------------------------|
-| id           | INT              | PRIMARY KEY, AUTO_INCREMENT           | Patient unique ID                    |
-| full_name    | VARCHAR(100)     | NOT NULL                              | Patient full name                    |
-| email        | VARCHAR(100)     | NOT NULL, UNIQUE                      | Patient login / contact email        |
-| date_of_birth| DATE             | NULL                                  | Patient date of birth                |
-| phone_number | VARCHAR(20)      | NULL                                  | Optional phone                       |
-| created_at   | DATETIME         | NOT NULL, DEFAULT CURRENT_TIMESTAMP   | When patient registered              |
-| gender       | VARCHAR(20)      | NULL                                  | Simple text field (e.g., "Male")     |
+- **id:** INT, Primary Key, AUTO_INCREMENT  
+- **full_name:** VARCHAR(100), NOT NULL  
+- **email:** VARCHAR(100), NOT NULL, UNIQUE  
+- **specialization:** VARCHAR(100), NOT NULL  
+- **phone_number:** VARCHAR(20), NULL  
+- **is_active:** TINYINT(1), DEFAULT 1  
+- **created_at:** DATETIME, DEFAULT CURRENT_TIMESTAMP  
 
-> **Why?**  
-> Patients are first-class users and must be uniquely identified by email. Other fields are optional to keep registration simple.
-
----
-
-#### 1.2.4 `appointments`
-
-| Column          | Data Type        | Constraints                                        | Description                                  |
-|----------------|------------------|----------------------------------------------------|----------------------------------------------|
-| id             | INT              | PRIMARY KEY, AUTO_INCREMENT                        | Appointment unique ID                         |
-| patient_id     | INT              | NOT NULL, FOREIGN KEY → patients(id)              | Linked patient                                |
-| doctor_id      | INT              | NOT NULL, FOREIGN KEY → doctors(id)               | Linked doctor                                 |
-| start_time     | DATETIME         | NOT NULL                                           | Appointment start date/time                   |
-| end_time       | DATETIME         | NOT NULL                                           | Appointment end date/time                     |
-| status         | VARCHAR(20)      | NOT NULL, DEFAULT 'SCHEDULED'                      | e.g., SCHEDULED, COMPLETED, CANCELLED         |
-| created_at     | DATETIME         | NOT NULL, DEFAULT CURRENT_TIMESTAMP                | When appointment was created                   |
-| notes          | TEXT             | NULL                                               | Optional short notes (non-clinical)           |
-
-**Constraints & Relationships:**
-
-- `patient_id` → references `patients.id`  
-- `doctor_id` → references `doctors.id`  
-- Optional unique constraint on (`doctor_id`, `start_time`) to avoid double booking.
-
-> **Why?**  
-> Appointments represent the main link between patients and doctors. Storing status allows simple reporting and history.
+**Notes:**  
+- Doctors need unique emails for login.  
+- is_active allows disabling without deleting.
 
 ---
 
-### 1.3 Relationship Summary
+### Table: appointments
+Links a patient and a doctor with a scheduled appointment time.
 
-- `patients (1) —— (N) appointments`  
-- `doctors (1) —— (N) appointments`  
-- `admins` are independent and mainly used for management and reporting.
+- **id:** INT, Primary Key, AUTO_INCREMENT  
+- **doctor_id:** INT, Foreign Key → doctors(id), NOT NULL  
+- **patient_id:** INT, Foreign Key → patients(id), NOT NULL  
+- **start_time:** DATETIME, NOT NULL  
+- **end_time:** DATETIME, NOT NULL  
+- **status:** VARCHAR(20), DEFAULT 'SCHEDULED'  
+- **created_at:** DATETIME, DEFAULT CURRENT_TIMESTAMP  
+- **notes:** TEXT, NULL  
 
-This structure supports common queries like:
-
-- All appointments for a given patient  
-- Daily schedule of a doctor  
-- Monthly appointment counts for reporting
-
----
-
-## 2. MongoDB Document Database Design
-
-### 2.1 Overview
-
-MongoDB is used for **flexible, document-based data** where the structure may change over time or contain nested details.
-
-For this project, we will store **prescriptions** in a MongoDB collection named `prescriptions`.
-
-A prescription can include:
-
-- Basic link to patient and doctor  
-- Visit date  
-- List of prescribed medicines  
-- Optional notes, instructions, or follow-up recommendations  
-
-This structure is a good fit for MongoDB because medication lists and instructions can vary per appointment.
+**Considerations:**  
+- Should a doctor have overlapping appointments? (Backend validation required.)  
+- Should old appointment history be retained? (Yes, for medical history.)  
+- If a patient is deleted, appointments should remain for audit purposes.
 
 ---
 
-### 2.2 `prescriptions` Collection
+### Table: admin
+Stores admin accounts responsible for managing doctors and monitoring system usage.
 
-**Collection Name:** `prescriptions`
+- **id:** INT, Primary Key, AUTO_INCREMENT  
+- **full_name:** VARCHAR(100), NOT NULL  
+- **email:** VARCHAR(100), NOT NULL, UNIQUE  
+- **password_hash:** VARCHAR(255), NOT NULL  
+- **created_at:** DATETIME, DEFAULT CURRENT_TIMESTAMP  
 
-Each document will represent **one prescription** for a specific appointment.
+**Notes:**  
+- Admin credentials should be secure and encrypted.
 
-#### Example Document
+---
+
+### Optional Additional Tables (if needed)
+You may extend the schema with:
+
+- **clinic_locations**  
+- **payments**  
+- **doctor_availability** (to store time slots)
+
+These are optional for the lab but realistic for future expansion.
+
+---
+
+## MongoDB Collection Design
+
+MongoDB is used for flexible or semi-structured content that does not fit nicely into rigid SQL tables.  
+Prescriptions are a good example because:
+
+- They vary in length (multiple medicines).  
+- They may include extra notes, tags, or metadata.  
+- They may change in format over time.
+
+Below is the MongoDB collection.
+
+---
+
+### Collection: prescriptions
+
+Example document:
 
 ```json
 {
-  "_id": "6740b8f90f1c4a1234567890",
-  "appointmentId": 101,                 // matches appointments.id in MySQL
-  "patientId": 25,                       // matches patients.id
-  "doctorId": 7,                         // matches doctors.id
-  "issuedAt": "2025-03-21T10:30:00Z",    // ISO date string
-  "diagnosis": "Acute sinusitis",
+  "_id": "ObjectId('64abc123456')",
+  "appointmentId": 51,
+  "patientId": 12,
+  "doctorId": 4,
+  "issuedAt": "2025-03-21T10:30:00Z",
+  "diagnosis": "Seasonal Flu",
   "medications": [
     {
-      "name": "Amoxicillin 500mg",
-      "dosage": "1 capsule",
-      "frequency": "3 times a day",
-      "durationDays": 7,
-      "instructions": "Take after meals"
+      "name": "Paracetamol",
+      "dosage": "500mg",
+      "frequency": "1 tablet every 6 hours",
+      "durationDays": 5
     },
     {
-      "name": "Paracetamol 650mg",
-      "dosage": "1 tablet",
-      "frequency": "As needed for pain",
-      "durationDays": 5,
-      "instructions": "Do not exceed 4 tablets per day"
+      "name": "Cetirizine",
+      "dosage": "10mg",
+      "frequency": "1 tablet before bed",
+      "durationDays": 7
     }
   ],
-  "followUp": {
-    "required": true,
-    "recommendedDate": "2025-04-01",
-    "notes": "Review symptoms and adjust medication if no improvement"
+  "doctorNotes": "Stay hydrated and rest well.",
+  "refillCount": 1,
+  "pharmacy": {
+    "name": "Walgreens SF",
+    "location": "Market Street"
   },
-  "createdBy": "Dr. John Doe",
+  "tags": ["flu", "cold", "fever"],
   "createdAt": "2025-03-21T10:35:00Z",
-  "lastUpdatedAt": "2025-03-21T10:35:00Z"
+  "updatedAt": "2025-03-21T10:35:00Z"
 }
