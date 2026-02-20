@@ -1,53 +1,210 @@
-/* this is the style sheet file for index.htlm  */
+/* 1. Global Reset: remove default spacing and use border-box sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* 
-**Global Reset (`*`)**
+/* 2. Base HTML & Body: full height and clean font */
+html,
+body {
+  height: 100%;
+  font-family: "Roboto", system-ui, sans-serif;
+  color: #003e3e;
+}
 
-* Remove all default margin and padding.
-* Use `border-box` for sizing to include padding and border in element size.
+/* 3. Container: keeps layout consistent */
+.container {
+  width: 100%;
+  min-height: 100vh;
+}
 
-**Base (`html, body`)**
+/* 4. Wrapper: vertical layout with flex */
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-* Set height to 100% for full viewport layout.
-* Use the `'Roboto'` sans-serif font for modern, clean typography.
+/* 5. Main content: center items + background image */
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 
-**Layout Wrapper (`.wrapper`)**
+  /* Background image placeholder path */
+  background-image: url("../images/index/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 
-* Use a vertical flexbox layout.
-* Ensure the wrapper covers at least the full height of the screen (`min-height: 100vh`).
+/* 6. Heading (Select Your Role) */
+.role-title {
+  font-size: 48px;
+  margin-bottom: 50px;
+  color: #003e3e;
+  font-weight: 700;
+  font-family: "Alegreya", "Roboto", sans-serif;
+}
 
-**Heading (`h2`)**
+/* 7. Wrapper for role buttons */
+.role-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
 
-* Set a large font size (`48px`) for prominence.
-* Add a bottom margin of `50px` for spacing.
-* Use a dark teal color (`#003e3e`).
-* Make the font bold and use a blended font stack (`'Alegreya', 'Roboto', sans-serif`) for elegant styling.
+/* 8. General button styling */
+button,
+.role-btn,
+.dashboard-btn {
+  background-color: #015c5d;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  width: 200px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
 
-**Main Section (`.main-content`)**
+/* 9. Styled role buttons */
+.role-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-* Allow the section to grow to fill space with `flex-grow: 1`.
-* Add `40px` of internal padding.
-* Center content both horizontally and vertically using `justify-content` and `align-items`.
-* Display items in a column direction.
-* Center all text.
-* Apply a full-screen background image with:
+/* 10. Hover behavior for all main buttons */
+button:hover,
+.role-btn:hover {
+  background-color: #a62b1f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
 
-  * `cover` size
-  * `center` positioning
-  * no repeat
-  * `fixed` attachment to keep image still during scroll
+/* 11. Dashboard button hover */
+.dashboard-btn:hover {
+  background-color: #003e3e;
+}
 
-**Buttons (`button`)**
+/* 12. Modal overlay structure */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.4);
+}
 
-* Style with a teal green background (`#015c5d`) and white text.
-* Remove borders and round the corners (`12px`).
-* Use `10px 20px` padding and set width to `200px`.
-* Add a top margin of `10px` for spacing.
-* Enable pointer cursor and readable font size (`16px`).
-* On hover, change background color to bold red (`#A62B1F`).
+/* 13. Modal inner box */
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px 24px;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
 
-**Dashboard Buttons (`.dashboard-btn`)**
+/* 14. Close button for modal */
+.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.15s ease;
+}
 
-* Use the same base green background (`#015c5d`) as the default button.
-* On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
- */
+.close:hover {
+  color: #a62b1f;
+}
+
+/* 15. Header & footer placeholders */
+#header,
+#footer {
+  width: 100%;
+}
+
+/* 16. Header base layout */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+/* 17. Footer base layout */
+.footer {
+  margin-top: auto;
+  padding: 16px 24px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #f5f5f5;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 18. Shared form/input styling */
+.input-field,
+.select-dropdown {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin: 8px 0;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-field:focus,
+.select-dropdown:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 3px rgba(1, 92, 93, 0.15);
+}
+
+/* 19. Checkbox alignment */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 20. Responsive adjust for smaller screens */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 24px;
+  }
+
+  .role-title {
+    font-size: 32px;
+    margin-bottom: 32px;
+  }
+
+  button,
+  .role-btn,
+  .dashboard-btn {
+    width: 180px;
+  }
+
+  .modal-content {
+    margin-top: 30%;
+  }
+}

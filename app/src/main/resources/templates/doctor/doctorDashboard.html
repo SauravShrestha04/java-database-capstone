@@ -2,7 +2,8 @@
 
 <!-- 
 Step-by-Step Explanation of `doctorDashboard.html`
-This file defines the Doctor Dashboard interface, allowing doctors to view and manage their patient appointments, search records, and access patient prescriptions.
+This file defines the Doctor Dashboard interface, allowing doctors to view and manage
+their patient appointments, search records, and access patient prescriptions.
 
 1. Label the File
 
@@ -20,9 +21,10 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 
    * Start the `<head>` section to include essential meta information, styles, and scripts.
 
-5. Set Character Encoding
+5. Set Character Encoding and Viewport
 
    * Use `<meta charset="UTF-8">` to support all text characters and prevent encoding issues.
+   * Add `<meta name="viewport" content="width=device-width, initial-scale=1.0">` for responsive behavior on mobile devices.
 
 6. Set the Favicon
 
@@ -46,11 +48,11 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
      - `render.js` – Handles common rendering logic.
      - `util.js` – Provides utility functions.
      - `header.js` and `footer.js` – Dynamically inject header/footer.
-     - `doctorDashboard.js` – Contains dashboard logic for doctor functionality, loaded as a module.
 
 10. Close the Head and Begin the Body
 
-    * Begin the visible part of the webpage using `<body onload="renderContent()">`, which calls a JavaScript function after loading.
+    * Begin the visible part of the webpage using `<body onload="renderContent()">`,
+      which calls a JavaScript function after loading.
 
 11. Create the Main Container
 
@@ -66,14 +68,13 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 
 14. Define the Main Content Area
 
-    * Use `<div class="main-content">` for the central section of the dashboard.
+    * Use `<main class="main-content">` for the central section of the dashboard.
 
 15. Add a Search Bar
 
     * Include an input field with `id="searchBar"` for doctors to search patients or data:
-      ```html
-      <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
-      ```
+
+      `<input type="text" id="searchBar" class="searchBar" placeholder="Search by patient name or ID" />`
 
 16. Add Filter Controls
 
@@ -84,6 +85,7 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 17. Add a Patient Table
 
     * Display a table to list patient data:
+      - `id="patientTable"` for table-level JS access.
       - Headers: Patient ID, Name, Phone No., Email, and Prescription.
       - Body: `<tbody id="patientTableBody"></tbody>` for dynamic content insertion.
 
@@ -91,11 +93,119 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 
     * Use `<div id="footer"></div>` to load a common footer via JavaScript.
 
-19. Close the Wrapper and Container
+19. Include Page-Specific JavaScript Modules
 
-    * Close `wrapper` and `container` divs to maintain structural integrity.
+    * Load doctor-specific logic:
+      - `patientServices.js` for API calls.
+      - `patientRows.js` for rendering table rows.
+      - `doctorDashboard.js` for dashboard behaviors and event wiring.
 
 20. End the Body and HTML
 
     * Properly close the `<body>` and `<html>` tags to complete the document.
- -->
+-->
+
+<!DOCTYPE html> <!-- (2) Declare HTML5 document type -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!-- (3) HTML root with Thymeleaf namespace -->
+
+<head> <!-- (4) Head section starts -->
+
+  <!-- (5) Meta tags for character encoding and responsiveness -->
+  <meta charset="UTF-8" /> <!-- (5) UTF-8 encoding -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- (5) Responsive layout -->
+
+  <!-- (7) Page title -->
+  <title>Doctor Dashboard</title>
+
+  <!-- (6) Favicon using Thymeleaf path -->
+  <link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />
+
+  <!-- (8) Stylesheets: shared admin layout, doctor-specific styles, and global styles -->
+  <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+
+  <!-- (9) Shared JavaScript utilities and layout components (loaded with defer) -->
+  <script th:src="@{/js/render.js}" defer></script>
+  <script th:src="@{/js/util.js}" defer></script>
+  <script th:src="@{/js/components/header.js}" defer></script>
+  <script th:src="@{/js/components/footer.js}" defer></script>
+
+</head> <!-- (10) Close head -->
+
+<body onload="renderContent()"> <!-- (10) Body starts, calls renderContent on load -->
+
+  <!-- (11) Main container for the whole dashboard page -->
+  <div class="container">
+
+    <!-- (12) Wrapper to group header, main content, and footer -->
+    <div class="wrapper">
+
+      <!-- (13) Header placeholder; populated dynamically via header.js -->
+      <div id="header"></div>
+
+      <!-- (14) Main doctor dashboard content area -->
+      <main class="main-content">
+
+        <!-- (15) Search bar for filtering patients/appointments -->
+        <input
+          type="text"
+          id="searchBar"
+          class="searchBar"
+          placeholder="Search by patient name, ID, or phone"
+        />
+
+        <!-- (16) Filter controls for appointment date and today's view -->
+        <div class="filter-wrapper">
+          <button id="todayButton" class="filter-btn">
+            Today&apos;s Appointments
+          </button>
+
+          <input
+            type="date"
+            id="datePicker"
+            class="date-picker"
+            aria-label="Select appointment date"
+          />
+        </div>
+
+        <!-- (17) Patient records table -->
+        <section class="table-section">
+          <table id="patientTable" class="patient-table">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Phone No.</th>
+                <th>Email</th>
+                <th>Prescription</th>
+              </tr>
+            </thead>
+            <tbody id="patientTableBody">
+              <!-- Patient rows will be rendered here by patientRows.js / doctorDashboard.js -->
+            </tbody>
+          </table>
+
+          <!-- Optional: message when there are no records -->
+          <p id="noRecordsMessage" class="noPatientRecord" style="display: none;">
+            No appointments found for the selected criteria.
+          </p>
+        </section>
+
+      </main>
+
+      <!-- (18) Footer placeholder; populated dynamically via footer.js -->
+      <div id="footer"></div>
+
+    </div> <!-- (19) Close wrapper -->
+
+  </div> <!-- (19) Close container -->
+
+  <!-- (19) Page-specific JavaScript modules for doctor dashboard logic -->
+  <script type="module" th:src="@{/js/services/patientServices.js}" defer></script>
+  <script type="module" th:src="@{/js/components/patientRows.js}" defer></script>
+  <script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
+
+</body> <!-- (20) Close body -->
+
+</html> <!-- (20) Close html -->

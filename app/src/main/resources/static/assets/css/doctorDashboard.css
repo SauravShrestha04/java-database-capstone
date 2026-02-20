@@ -62,4 +62,250 @@
 ---
 
 Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
- */
+*/
+
+/* Reset & base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Layout */
+.container {
+  min-height: 100vh;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Optional heading inside doctor dashboard */
+.table-header {
+  font-size: 24px;
+  font-weight: 700;
+  color: #015c5d;
+  margin-bottom: 30px;
+}
+
+/* Search & filters */
+.searchBar {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchBar:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 3px rgba(1, 92, 93, 0.15);
+}
+
+.filter-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* General filter button style */
+.filter-btn,
+.today-btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background-color: #015c5d;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Specific today button (if used) */
+.today-btn {
+  margin-right: 10px;
+}
+
+.filter-btn:hover,
+.today-btn:hover {
+  background-color: #017d7e;
+  transform: translateY(-1px);
+}
+
+.filter-btn:active,
+.today-btn:active {
+  transform: translateY(0);
+}
+
+/* Date picker */
+.date-picker {
+  margin-left: 10px;
+  margin-top: 4px;
+  padding: 8px 10px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-picker:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 3px rgba(1, 92, 93, 0.15);
+}
+
+/* Table section */
+.table-section {
+  margin-top: 10px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Table styling */
+.patient-table,
+.table-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+.patient-table thead,
+.table-section table thead {
+  background-color: #33333310; /* subtle dark overlay */
+  color: #ffffff;
+}
+
+.patient-table th,
+.patient-table td,
+.table-section table th,
+.table-section table td {
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid #dddddd;
+}
+
+/* Alternating row colors */
+.patient-table tbody tr:nth-child(odd),
+.table-section table tbody tr:nth-child(odd) {
+  background-color: #ffffffc0;
+}
+
+.patient-table tbody tr:nth-child(even),
+.table-section table tbody tr:nth-child(even) {
+  background-color: #f9f9f959;
+}
+
+/* Hover effect */
+.patient-table tbody tr:hover,
+.table-section table tbody tr:hover {
+  background-color: #015c5d39;
+}
+
+/* Prescription button */
+.prescription-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.prescription-btn img,
+.prescription-btn svg {
+  width: 100%;
+  height: 100%;
+}
+
+.prescription-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+.prescription-btn:active {
+  transform: scale(0.95);
+}
+
+/* No record message */
+.noPatientRecord {
+  margin-top: 16px;
+  font-size: 16px;
+  font-style: italic;
+  color: #777777;
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 24px 12px;
+  }
+
+  .searchBar {
+    max-width: 100%;
+  }
+
+  .patient-table th,
+  .patient-table td,
+  .table-section table th,
+  .table-section table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .filter-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-btn,
+  .today-btn,
+  .date-picker {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .date-picker {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header {
+    font-size: 20px;
+  }
+
+  .patient-table th,
+  .patient-table td,
+  .table-section table th,
+  .table-section table td {
+    font-size: 12px;
+  }
+}

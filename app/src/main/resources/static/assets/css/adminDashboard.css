@@ -46,7 +46,7 @@ Main Content Section (`.main-content`)
   * `padding: 40px` — adds internal spacing around content.
   * `display: flex` and `flex-direction: column` — organizes content in a vertical stack.
   * `text-align: center` — centers the text.
-  * `background-image: url("index.png")` — sets a full-screen dashboard background.
+  * `background-image: url("../images/index.png")` — sets a full-screen dashboard background.
   * `background-size: cover` — ensures the image covers the whole section.
   * `background-position: center` — centers the image.
   * `background-repeat: no-repeat` — avoids tiling the image.
@@ -86,9 +86,279 @@ Admin Button (`.adminBtn`)
   * `border: none` — clean look.
   * `cursor: pointer` — indicates it's clickable.
 
-* On Hover**:
+* On Hover:
 
    Changes text color to `#A62B1F` for brand consistency while keeping the background same.
 
 
 */
+
+/* === Global Reset and Base Setup === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* === Layout and Wrappers === */
+.container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main content area with background image */
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  background-image: url("../images/index.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* optional section heading if used */
+.main-content h2 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 50px;
+  color: #003e3e;
+}
+
+/* === Interactive Elements: Search Bar & Filters === */
+.searchBar {
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchBar:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 2px rgba(1, 92, 93, 0.15);
+}
+
+/* wrapper for filter dropdowns */
+.filter-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* filter select boxes */
+.filter-select {
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-select:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 2px rgba(1, 92, 93, 0.15);
+}
+
+/* === Buttons === */
+/* primary button style */
+button {
+  background-color: #a62b1f; /* bold red */
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin-top: 20px;
+  width: 200px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover {
+  /* keep color for branding; add subtle motion */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* admin-specific compact button (for header actions like "Add Doctor") */
+.adminBtn {
+  background-color: #f4f4f4;
+  color: #333333;
+  font-weight: bold;
+  width: 110px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.adminBtn:hover {
+  color: #a62b1f;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* === Doctor Cards and Content Area === */
+.content-area {
+  width: 100%;
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* basic doctor card style – can be used by doctorCard.js output */
+.doctor-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  width: 260px;
+  max-width: 100%;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.doctor-card h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #003e3e;
+}
+
+.doctor-card p {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #555555;
+}
+
+/* optional small badge style for specialty/status */
+.doctor-card .badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background-color: #e6f4f4;
+  color: #015c5d;
+  margin-top: 6px;
+}
+
+/* === Modal Styling === */
+.modal {
+  display: none; /* will be set to flex by JS when opened */
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #ffffff;
+  padding: 24px 28px;
+  max-width: 480px;
+  width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* close button (×) in the top-right corner */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #666666;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.close:hover {
+  color: #000000;
+}
+
+/* form controls inside modal */
+.modal input,
+.modal select,
+.modal textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  border-color: #015c5d;
+  box-shadow: 0 0 0 2px rgba(1, 92, 93, 0.15);
+}
+
+/* align modal action buttons to the right */
+.modal .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 24px 16px;
+  }
+
+  .searchBar {
+    max-width: 100%;
+  }
+
+  .content-area {
+    gap: 16px;
+  }
+
+  .doctor-card {
+    width: 100%;
+  }
+}

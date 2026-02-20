@@ -1,33 +1,179 @@
 <!-- patientDashboard.html -->
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="../assets/images/logo/logo.png" />
-    <title>PatientDashboard</title>
-    <link rel="stylesheet" href="../assets/css/adminDashboard.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/patientDashboard.css">
+<!-- 
+Step-by-Step Explanation of `patientDashboard.html`
+This file defines the Patient Dashboard UI where patients can browse doctors,
+filter them by time and specialty, and open a modal to book appointments.
+
+1. Label the File
+
+   * Add a top comment identifying this file as `patientDashboard.html` so other
+     developers quickly understand its purpose.
+
+2. Declare the Document Type
+
+   * Use `<!DOCTYPE html>` to indicate HTML5 and ensure modern, consistent
+     browser behavior.
+
+3. Begin the HTML Document
+
+   * Start the `<html>` element and set `lang="en"` for accessibility, SEO, and
+     correct language handling by screen readers and search engines.
+
+4. Head Section – Metadata & Assets
+
+   * Open the `<head>` tag to define metadata, styles, and scripts that don’t
+     directly render as visible content.
+
+5. Set Character Encoding
+
+   * Use `<meta charset="UTF-8">` to support a wide range of characters and
+     avoid encoding issues across different systems.
+
+6. Add a Favicon
+
+   * Link a logo icon so it appears in the browser tab using:
+     `<link rel="icon" type="image/png" href="../assets/images/logo/logo.png" />`.
+
+7. Set the Page Title
+
+   * Define a descriptive title such as `"Patient Dashboard"` to show in the
+     browser tab and help users identify the page.
+
+8. Link Stylesheets
+
+   * Attach the required CSS files:
+     - `adminDashboard.css` for shared layout styles.
+     - `style.css` for global/shared components.
+     - `patientDashboard.css` for patient-dashboard-specific styles.
+
+9. Add Utility & Component Scripts (with `defer`)
+
+   * Include:
+     - `render.js` for common rendering logic.
+     - `util.js` for shared helper functions (e.g., token handling).
+     - `header.js` and `footer.js` to dynamically inject header and footer.
+     - `modals.js` (as an ES module) for reusable modal behavior.
+   * Use `defer` so scripts execute after HTML is parsed, improving perceived load time.
+
+10. Begin the Body with Onload Hook
+
+    * Start `<body onload="renderContent()">` to call a render function once the
+      DOM is ready, ensuring dynamic content (like doctors list) can be injected.
+
+11. Create Outer Container
+
+    * Wrap the entire page in `<div class="container">` to standardize layout
+      width/spacing across the app.
+
+12. Add Wrapper for Page Sections
+
+    * Inside the container, use `<div class="wrapper">` to group header, main,
+      and footer logically and support flexbox or vertical layouts.
+
+13. Insert Header Placeholder
+
+    * Add `<div id="header"></div>` where the JavaScript `header.js` component
+      will dynamically render the role-aware header/navigation.
+
+14. Define Main Content Area
+
+    * Use `<main class="main-content">` as the semantic container for the
+      patient dashboard’s primary content (search, filters, doctor cards).
+
+15. Add Search Bar
+
+    * Include an `<input>` with:
+      - `id="searchBar"` and `class="searchBar"` for styling and JS targeting.
+      - `placeholder` guiding users that they can search for doctors.
+
+16. Add Filter Controls
+
+    * Use a `<div class="filter-wrapper">` containing two `<select>` elements:
+      - `#filterTime` to sort/filter doctors by AM/PM availability.
+      - `#filterSpecialty` to filter doctors by medical specialty.
+    * Options are pre-defined (Cardiologist, Dermatologist, etc.) for quick
+      selection from the patient’s side.
+
+17. Add Content Container for Doctor Cards
+
+    * Create `<div id="content"></div>` where JavaScript will dynamically inject
+      doctor cards or lists based on search/filter selections.
+
+18. Insert Footer Placeholder
+
+    * Add `<div id="footer"></div>` to render a shared footer using
+      `footer.js`, keeping layout consistent across pages.
+
+19. Add Reusable Modal Markup
+
+    * Below the main layout, define a modal structure:
+      - Outer overlay `<div id="modal" class="modal">`.
+      - Inner `<div class="modal-content">` to hold actual modal UI.
+      - Close button `<span class="close" id="closeModal">&times;</span>`.
+      - Content container `<div id="modal-body"></div>` where
+        `modals.js` / `patientDashboard.js` can inject booking forms or details.
+
+20. Load Page-Specific Logic Module
+
+    * At the end of `<body>`, load `patientDashboard.js` as a module with
+      `type="module"` and `defer`:
+      - Handles patient-specific rendering, doctor fetching, filters, and
+        modal triggers for appointment booking.
+    * Finally close the `</body>` and `</html>` tags to complete the document.
+-->
+
+<!DOCTYPE html> <!-- 2. HTML5 document type declaration -->
+<html lang="en"> <!-- 3. Start HTML document with language set to English -->
+
+<head> <!-- 4. Head section: metadata, styles, and scripts -->
+    <meta charset="UTF-8"> <!-- 5. Character encoding -->
+
+    <!-- 6. Favicon for branding in browser tab -->
+    <link rel="icon" type="image/png" href="../assets/images/logo/logo.png" />
+
+    <title>Patient Dashboard</title> <!-- 7. Page title -->
+
+    <!-- 8. Stylesheets for shared and patient-specific styling -->
+    <link rel="stylesheet" href="../assets/css/adminDashboard.css" />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/patientDashboard.css" />
+
+    <!-- 9. Utility & component scripts (deferred for non-blocking load) -->
     <script src="../js/render.js" defer></script>
     <script src="../js/util.js" defer></script>
     <script src="../js/components/header.js" defer></script>
     <script src="../js/components/footer.js" defer></script>
-    <script type="module" src="../js/components/modals.js"></script>
+    <script type="module" src="../js/components/modals.js" defer></script>
+    <script type="module" src="../js/patientDashboard.js" defer></script>
+    
 </head>
 
-<body onload="renderContent()">
-    <div class="container">
-        <div class="wrapper">
+<body onload="renderContent()"> <!-- 10. Body with onload hook to render content -->
+    <div class="container"> <!-- 11. Outer container for layout -->
+        <div class="wrapper"> <!-- 12. Wrapper grouping header, main, footer -->
+
+            <!-- 13. Header placeholder (filled by header.js) -->
             <div id="header"></div>
+
+            <!-- 14. Main patient dashboard area -->
             <main class="main-content">
-                <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
+                <!-- 15. Search bar for doctors / specialties / names -->
+                <input
+                    type="text"
+                    id="searchBar"
+                    class="searchBar"
+                    placeholder="Search doctors by name, specialty, or keyword"
+                />
+
+                <!-- 16. Filter controls for time and specialty -->
                 <div class="filter-wrapper">
                     <select class="filter-select" id="filterTime">
                         <option value="">Sort by Time</option>
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                     </select>
+
                     <select class="filter-select" id="filterSpecialty">
                         <option value="">Filter by Specialty</option>
                         <option value="Cardiologist">Cardiologist</option>
@@ -46,17 +192,25 @@
                         <option value="General">General Physician</option>
                     </select>
                 </div>
+
+                <!-- 17. Dynamic content area where doctor cards will be rendered -->
                 <div id="content"></div>
             </main>
+
+            <!-- 18. Footer placeholder (filled by footer.js) -->
             <div id="footer"></div>
         </div>
     </div>
+
+    <!-- 19. Reusable modal for appointment booking and doctor details -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
+
+    <!-- 20. Patient dashboard logic: fetching doctors, filters, booking, etc. -->
     <script type="module" src="../js/patientDashboard.js" defer></script>
 </body>
 
