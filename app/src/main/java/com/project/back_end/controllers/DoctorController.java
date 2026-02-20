@@ -1,8 +1,7 @@
 package com.project.back_end.controllers;
 
-import com.project.back_end.models.Admin; 
+import com.project.back_end.models.Doctor; 
 import com.project.back_end.DTO.Login;
-import com.project.back_end.model.Doctor;
 import com.project.back_end.services.DoctorService;
 import com.project.back_end.services.Service;
 import org.springframework.http.HttpStatus;
