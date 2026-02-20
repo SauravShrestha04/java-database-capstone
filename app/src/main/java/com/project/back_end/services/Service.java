@@ -1,15 +1,10 @@
 package com.project.back_end.services;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Admin;
@@ -20,18 +15,13 @@ import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 
-@Service
+@org.springframework.stereotype.Service
 public class Service {
 
-    // Token service for JWT operations
     private final TokenService tokenService;
-
-    // Repositories for data access
     private final AdminRepository adminRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
-
-    // Other services for business logic
     private final DoctorService doctorService;
     private final PatientService patientService;
 
@@ -49,9 +39,6 @@ public class Service {
         this.patientService = patientService;
     }
 
-    // Validate token for a given user type
-    // EMPTY map = token is valid
-    // NON-EMPTY map (contains "message") = token invalid / missing
     public Map<String, String> validateToken(String token, String user) {
         if (token == null || token.isBlank()) {
             Map<String, String> body = new HashMap<>();
@@ -67,11 +54,9 @@ public class Service {
             return body;
         }
 
-        // Valid token → no errors
         return Collections.emptyMap();
     }
 
-    // Validate admin credentials and generate token
     public ResponseEntity<Map<String, String>> validateAdmin(Admin receivedAdmin) {
         Map<String, String> body = new HashMap<>();
         try {
@@ -96,42 +81,32 @@ public class Service {
         }
     }
 
-    // Filter doctors by name, specialty, and time
     public Map<String, Object> filterDoctor(String name, String specialty, String time) {
         boolean hasName = name != null && !name.isBlank();
         boolean hasSpec = specialty != null && !specialty.isBlank();
         boolean hasTime = time != null && !time.isBlank();
 
         if (hasName && hasSpec && hasTime) {
-            // name + specialty + time
             return doctorService.filterDoctorsByNameSpecilityandTime(name, specialty, time);
         } else if (hasName && hasSpec) {
-            // name + specialty
             return doctorService.filterDoctorByNameAndSpecility(name, specialty);
         } else if (hasName && hasTime) {
-            // name + time
             return doctorService.filterDoctorByNameAndTime(name, time);
         } else if (hasSpec && hasTime) {
-            // specialty + time
             return doctorService.filterDoctorByTimeAndSpecility(specialty, time);
         } else if (hasName) {
-            // only name
             return doctorService.findDoctorByName(name);
         } else if (hasSpec) {
-            // only specialty
             return doctorService.filterDoctorBySpecility(specialty);
         } else if (hasTime) {
-            // only time
             return doctorService.filterDoctorsByTime(time);
         }
 
-        // no filters: return all doctors
         Map<String, Object> result = new HashMap<>();
         result.put("doctors", doctorService.getDoctors());
         return result;
     }
 
-    // Validate whether an appointment is possible
     public int validateAppointment(Appointment appointment) {
         if (appointment == null || appointment.getDoctor() == null) {
             return -1;
@@ -141,12 +116,10 @@ public class Service {
         Optional<Doctor> doctorOpt = doctorRepository.findById(doctorId);
 
         if (doctorOpt.isEmpty()) {
-            // doctor does not exist
             return -1;
         }
 
         if (appointment.getAppointmentTime() == null) {
-            // missing appointment time
             return 0;
         }
 
@@ -158,11 +131,9 @@ public class Service {
         }
 
         String requestedTime = appointment.getAppointmentTime().toLocalTime().toString();
-
         return availableSlots.contains(requestedTime) ? 1 : 0;
     }
 
-    // Check if patient does not already exist
     public boolean validatePatient(Patient patient) {
         if (patient == null) {
             return false;
@@ -175,12 +146,11 @@ public class Service {
         return existing == null;
     }
 
-    // Validate patient login and generate token
     public ResponseEntity<Map<String, String>> validatePatientLogin(Login login) {
         Map<String, String> body = new HashMap<>();
 
         try {
-            String identifier = login.getIdentifier(); // for patient this is email
+            String identifier = login.getIdentifier();
             Patient patient = patientRepository.findByEmail(identifier);
 
             if (patient == null) {
@@ -203,7 +173,6 @@ public class Service {
         }
     }
 
-    // Filter patient appointments based on condition and doctor name
     public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
         try {
             String email = tokenService.extractIdentifier(token);
@@ -225,16 +194,12 @@ public class Service {
             boolean hasName = name != null && !name.isBlank();
 
             if (hasCondition && hasName) {
-                // filter by doctor and condition
                 return patientService.filterByDoctorAndCondition(condition, name, patientId);
             } else if (hasCondition) {
-                // filter by condition only
                 return patientService.filterByCondition(condition, patientId);
             } else if (hasName) {
-                // filter by doctor only
                 return patientService.filterByDoctor(name, patientId);
             } else {
-                // no filters: return all appointments for patient
                 return patientService.getPatientAppointment(patientId, token);
             }
 

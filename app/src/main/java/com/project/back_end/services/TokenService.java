@@ -33,19 +33,14 @@ public class TokenService {
         this.patientRepository = patientRepository;
     }
 
-    /**
-     * Return the signing key bytes for HS256.
-     */
     private byte[] getSigningKey() {
         return jwtSecret.getBytes(StandardCharsets.UTF_8);
     }
 
-    // Simple form matching the lab description
     public String generateToken(String identifier) {
         return generateToken(identifier, null);
     }
 
-    // Extended form (used elsewhere in your services) with role as a claim
     public String generateToken(String identifier, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + 7L * 24 * 60 * 60 * 1000); // 7 days
@@ -63,23 +58,20 @@ public class TokenService {
         return builder.compact();
     }
 
-    // Name per the lab text
+    // Parse + extract subject
     public String extractIdentifier(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
     }
 
-    // Convenience wrapper to match how you used it elsewhere (getEmailFromToken)
     public String getEmailFromToken(String token) {
         return extractIdentifier(token);
     }
 
-    /**
-     * Validate whether a provided JWT token is valid for a specific user role.
-     */
     public boolean validateToken(String token, String user) {
         try {
             String identifier = extractIdentifier(token);
@@ -87,9 +79,9 @@ public class TokenService {
                 return false;
             }
 
-            // Explicit expiration check (parser already enforces, but this is defensive)
             Claims claims = Jwts.parser()
                     .setSigningKey(getSigningKey())
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
             Date expiration = claims.getExpiration();
@@ -97,7 +89,6 @@ public class TokenService {
                 return false;
             }
 
-            // Validate against DB based on user type
             switch (user.toLowerCase()) {
                 case "admin": {
                     Admin admin = adminRepository.findByUsername(identifier);
@@ -112,18 +103,13 @@ public class TokenService {
                     return patient != null;
                 }
                 default:
-                    // Unknown user type
                     return false;
             }
         } catch (Exception e) {
-            // Any parsing/verification error means invalid token
             return false;
         }
     }
 
-    /**
-     * Get patient ID from a token whose subject is the patient's email.
-     */
     public Long getPatientIdFromToken(String token) {
         String email = extractIdentifier(token);
         if (email == null || email.isBlank()) {
@@ -133,9 +119,6 @@ public class TokenService {
         return patient != null ? patient.getId() : null;
     }
 
-    /**
-     * Get doctor ID from a token whose subject is the doctor's email.
-     */
     public Long getDoctorIdFromToken(String token) {
         String email = extractIdentifier(token);
         if (email == null || email.isBlank()) {
@@ -145,15 +128,10 @@ public class TokenService {
         return doctor != null ? doctor.getId() : null;
     }
 
-    /**
-     * Generate a token for a doctor by their ID.
-     * Uses the doctor's email as the subject, to keep tokens consistent.
-     */
     public String generateDoctorToken(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found with id " + doctorId));
 
-        // Reuse existing generateToken logic with identifier = email
         return generateToken(doctor.getEmail(), "doctor");
     }
 }

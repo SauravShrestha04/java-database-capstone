@@ -1,11 +1,11 @@
 package com.project.back_end.services;
 
-import com.project_back_end.models.Appointment;
-import com.project_back_end.models.Doctor;
-import com.project_back_end.models.Patient;
-import com.project_back_end.repo.AppointmentRepository;
-import com.project_back_end.repo.DoctorRepository;
-import com.project_back_end.repo.PatientRepository;
+import com.project.back_end.models.Appointment;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.models.Patient;
+import com.project.back_end.repo.AppointmentRepository;
+import com.project.back_end.repo.DoctorRepository;
+import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,35 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-/*
-  1. **Add @Service Annotation**:
-    - To indicate that this class is a service layer class for handling business logic.
-    - The `@Service` annotation should be added before the class declaration to mark it as a Spring service component.
-
-  2. **Constructor Injection for Dependencies**:
-    - The `AppointmentService` class requires several dependencies like `AppointmentRepository`, `Service`, `TokenService`, `PatientRepository`, and `DoctorRepository`.
-    - These dependencies should be injected through the constructor.
-
-  3. **Add @Transactional Annotation for Methods that Modify Database**:
-    - Methods that modify or update the database are annotated with `@Transactional` to ensure atomicity and consistency.
-
-  4. **Book Appointment Method**:
-    - Saves a new appointment to the database.
-    - Returns 1 on success, 0 on failure.
-
-  5. **Update Appointment Method**:
-    - Updates an existing appointment based on its ID.
-    - Uses sharedService.validateAppointment() to check business rules and availability.
-
-  6. **Cancel Appointment Method**:
-    - Cancels an appointment (delete) ensuring the patient who owns it is the one cancelling.
-
-  7. **Get Appointments Method**:
-    - Retrieves a list of appointments for a specific doctor on a particular day, optionally filtered by patient name.
-
-  8. **Change Status Method**:
-    - Updates the status of an appointment by ID.
-*/
 
 @Service
 public class AppointmentService {
@@ -53,13 +24,13 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final TokenService tokenService;
     // Use fully-qualified type to avoid clash with org.springframework.stereotype.Service
-    private final com.project_back_end.services.Service sharedService; // common service that contains validateAppointment / validateToken
+    private final com.project.back_end.services.Service sharedService; // common service that contains validateAppointment / validateToken
 
     public AppointmentService(AppointmentRepository appointmentRepository,
                               PatientRepository patientRepository,
                               DoctorRepository doctorRepository,
                               TokenService tokenService,
-                              com.project_back_end.services.Service sharedService) {
+                              com.project.back_end.services.Service sharedService) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
