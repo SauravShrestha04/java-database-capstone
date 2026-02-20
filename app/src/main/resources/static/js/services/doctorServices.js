@@ -51,3 +51,156 @@
 
    Catch any other errors, alert the user, and return a default empty result
 */
+
+import { API_BASE_URL } from "../config/config.js";
+
+const DOCTOR_API = API_BASE_URL + "/doctor";
+
+export async function getDoctors() {
+  try {
+    const response = await fetch(DOCTOR_API, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch doctors:", response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    if (Array.isArray(data.doctors)) {
+      return data.doctors;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    return [];
+  }
+}
+
+export async function deleteDoctor(id, token) {
+  if (!id || !token) {
+    console.error("deleteDoctor: doctor id or token missing");
+    return { success: false, message: "Missing doctor id or token." };
+  }
+
+  const url = `${DOCTOR_API}/${encodeURIComponent(id)}/${encodeURIComponent(token)}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      console.error("Failed to delete doctor:", response.status, response.statusText);
+      return {
+        success: false,
+        message: data.message || "Failed to delete doctor.",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "Doctor deleted successfully.",
+    };
+  } catch (error) {
+    console.error("Error deleting doctor:", error);
+    return {
+      success: false,
+      message: "An error occurred while deleting the doctor.",
+    };
+  }
+}
+
+export async function saveDoctor(doctor, token) {
+  if (!token) {
+    console.error("saveDoctor: token missing");
+    return { success: false, message: "Missing authentication token." };
+  }
+
+  const url = `${DOCTOR_API}/${encodeURIComponent(token)}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(doctor),
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      console.error("Failed to save doctor:", response.status, response.statusText);
+      return {
+        success: false,
+        message: data.message || "Failed to save doctor.",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "Doctor saved successfully.",
+      doctor: data.doctor || data,
+    };
+  } catch (error) {
+    console.error("Error saving doctor:", error);
+    return {
+      success: false,
+      message: "An error occurred while saving the doctor.",
+    };
+  }
+}
+
+export async function filterDoctors(name, time, specialty) {
+  const safeName = name && name.trim() ? encodeURIComponent(name.trim()) : "all";
+  const safeTime = time && time.trim() ? encodeURIComponent(time.trim()) : "all";
+  const safeSpecialty =
+    specialty && specialty.trim() ? encodeURIComponent(specialty.trim()) : "all";
+
+  const url = `${DOCTOR_API}/filter/${safeName}/${safeTime}/${safeSpecialty}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      console.error("Failed to filter doctors:", response.status, response.statusText);
+      return { doctors: [] };
+    }
+
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+      return { doctors: data };
+    }
+
+    if (Array.isArray(data.doctors)) {
+      return { doctors: data.doctors };
+    }
+
+    return { doctors: [] };
+  } catch (error) {
+    console.error("Error filtering doctors:", error);
+    alert("Unable to filter doctors at the moment. Please try again later.");
+    return { doctors: [] };
+  }
+}

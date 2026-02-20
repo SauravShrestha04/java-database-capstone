@@ -37,8 +37,6 @@ export async function patientLogin(data) {
     },
     body: JSON.stringify(data)
   });
-
-
 }
 
 // For getting patient data (name ,id , etc ). Used in booking appointments
@@ -83,11 +81,9 @@ export async function filterAppointments(condition, name, token) {
     if (response.ok) {
       const data = await response.json();
       return data;
-
     } else {
       console.error("Failed to fetch doctors:", response.statusText);
       return { appointments: [] };
-
     }
   } catch (error) {
     console.error("Error:", error);
