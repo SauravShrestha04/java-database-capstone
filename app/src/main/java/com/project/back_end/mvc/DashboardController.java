@@ -1,6 +1,6 @@
 package com.project.back_end.mvc;
 
-import com.project.back_end.service.CommonService;
+import com.project.back_end.services.Service;
 import com.project.back_end.models.Admin; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class DashboardController {
 
     @Autowired
-    private CommonService commonService;   // service handling token validation
+    private Service commonService;   // shared service handling token validation
 
     // Admin Dashboard
     @GetMapping("/adminDashboard/{token}")

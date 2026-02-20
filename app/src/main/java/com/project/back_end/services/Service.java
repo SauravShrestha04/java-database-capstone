@@ -50,23 +50,25 @@ public class Service {
     }
 
     // Validate token for a given user type
-    public ResponseEntity<Map<String, String>> validateToken(String token, String user) {
-        Map<String, String> body = new HashMap<>();
-
+    // EMPTY map = token is valid
+    // NON-EMPTY map (contains "message") = token invalid / missing
+    public Map<String, String> validateToken(String token, String user) {
         if (token == null || token.isBlank()) {
+            Map<String, String> body = new HashMap<>();
             body.put("message", "Token is missing");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+            return body;
         }
 
         boolean isValid = tokenService.validateToken(token, user);
 
         if (!isValid) {
+            Map<String, String> body = new HashMap<>();
             body.put("message", "Token is invalid or expired");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+            return body;
         }
 
-        body.put("message", "Token is valid");
-        return ResponseEntity.ok(body);
+        // Valid token → no errors
+        return Collections.emptyMap();
     }
 
     // Validate admin credentials and generate token
