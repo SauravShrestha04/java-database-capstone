@@ -1,29 +1,30 @@
 package com.project.back_end.controllers;
 
-import com.project.back_end.models.Prescription; 
-import com.project.back_end.services.AppointmentController;
+import com.project.back_end.models.Prescription;
+import com.project.back_end.services.AppointmentService;
 import com.project.back_end.services.PrescriptionService;
 import com.project.back_end.services.Service;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("${api.path}" + "prescription")
+@RequestMapping("${api.path}prescription")
 public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;
+    private final AppointmentService appointmentService;
     private final Service service;
-    private final AppointmentController appointmentService;
 
     public PrescriptionController(PrescriptionService prescriptionService,
-                                  Service service,
-                                  AppointmentController appointmentService) {
+                                  AppointmentService appointmentService,
+                                  Service service) {
         this.prescriptionService = prescriptionService;
-        this.service = service;
         this.appointmentService = appointmentService;
+        this.service = service;
     }
 
     @PostMapping("/{token}")
@@ -31,19 +32,11 @@ public class PrescriptionController {
             @PathVariable String token,
             @RequestBody Prescription prescription
     ) {
-        // Validate token for doctor role
-        Map<String, String> validationErrors = service.validateToken(token, "doctor");
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validationErrors);
-        }
+        Map<String, String> errors = service.validateToken(token, "doctor");
+        if (!errors.isEmpty()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
 
-        try {
-            if (prescription.getAppointmentId() != null) {
-                // id first, status second
-                appointmentService.changeStatus(prescription.getAppointmentId(), 1);
-            }
-        } catch (Exception e) {
-            // swallow or log if you want; keeping your behaviour
+        if (prescription.getAppointmentId() != null) {
+            appointmentService.changeStatus(prescription.getAppointmentId(), 1);
         }
 
         return prescriptionService.savePrescription(prescription);
@@ -54,10 +47,8 @@ public class PrescriptionController {
             @PathVariable Long appointmentId,
             @PathVariable String token
     ) {
-        Map<String, String> validationErrors = service.validateToken(token, "doctor");
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validationErrors);
-        }
+        Map<String, String> errors = service.validateToken(token, "doctor");
+        if (!errors.isEmpty()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
 
         return prescriptionService.getPrescription(appointmentId);
     }
